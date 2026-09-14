@@ -1,0 +1,71 @@
+{
+  "source_rows": 38217,
+  "usable_unique_rows": 38194,
+  "invalid_rows": 12,
+  "conflicting_texts_excluded": 2,
+  "train_rows": 30555,
+  "test_rows": 7639,
+  "class_counts": {
+    "depression": 10354,
+    "suicide": 12841,
+    "non-suicide": 14999
+  },
+  "accuracy": 0.8922633852598507,
+  "majority_baseline": 0.39272156041366674,
+  "report": {
+    "depression": {
+      "precision": 0.8895823331733077,
+      "recall": 0.8947368421052632,
+      "f1-score": 0.8921521425132403,
+      "support": 2071.0
+    },
+    "non-suicide": {
+      "precision": 0.890634820867379,
+      "recall": 0.9446666666666667,
+      "f1-score": 0.9168553866062763,
+      "support": 3000.0
+    },
+    "suicide": {
+      "precision": 0.896798652064027,
+      "recall": 0.8290498442367601,
+      "f1-score": 0.8615944961554026,
+      "support": 2568.0
+    },
+    "accuracy": 0.8922633852598507,
+    "macro avg": {
+      "precision": 0.8923386020349046,
+      "recall": 0.8894844510028966,
+      "f1-score": 0.8902006750916397,
+      "support": 7639.0
+    },
+    "weighted avg": {
+      "precision": 0.8924215752198558,
+      "recall": 0.8922633852598507,
+      "f1-score": 0.8915810856251896,
+      "support": 7639.0
+    }
+  },
+  "classes": [
+    "depression",
+    "non-suicide",
+    "suicide"
+  ],
+  "confusion_matrix": [
+    [
+      1853,
+      108,
+      110
+    ],
+    [
+      31,
+      2834,
+      135
+    ],
+    [
+      199,
+      240,
+      2129
+    ]
+  ],
+  "method": "Normalized exact deduplication before stratified 80/20 split, seed 42; training-only TF-IDF (40k features, 1\u20132 grams) + logistic regression. Negations retained. No external clinical validation; near-duplicates and author overlap may remain."
+}
