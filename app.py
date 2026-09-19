@@ -4,13 +4,14 @@ from collections import deque
 from threading import Lock
 from pathlib import Path
 import joblib
+from emotions import analyze_emotions
 from flask import Flask, jsonify, render_template, request
 
 ROOT = Path(__file__).parent
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 20000
-model = joblib.load(ROOT / 'model.joblib')
-metrics = json.loads((ROOT / 'metrics.json').read_text())
+model = joblib.load(ROOT / 'emotion_model.joblib')
+metrics = json.loads((ROOT / 'emotion_metrics.json').read_text())
 recent_requests = deque()
 request_lock = Lock()
 
@@ -28,7 +29,7 @@ def home():
 
 @app.get('/health')
 def health():
-    return jsonify(status='ok', model_loaded=True)
+    return jsonify(status='ok', model_loaded=True, model_version=metrics['model_version'])
 
 @app.errorhandler(413)
 def oversized(error):
@@ -49,11 +50,7 @@ def analyze():
         recent_requests.append(now)
     data = request.get_json(silent=True)
     value = data.get('text') if isinstance(data, dict) else None
-    if not isinstance(value, str) or not 20 <= len(value.strip()) <= 3000:
-        return jsonify(error='Enter between 20 and 3,000 characters.'), 400
+    if not isinstance(value, str) or not 3 <= len(value.strip()) <= 3000:
+        return jsonify(error='Enter between 3 and 3,000 characters.'), 400
     text = re.sub(r'\s+', ' ', re.sub(r'https?://\S+', '', value.lower())).strip()
-    features = model.named_steps['tfidf'].transform([text])
-    if features.nnz < 3:
-        return jsonify(error='Not enough familiar English words for a meaningful comparison.'), 422
-    scores = model.named_steps['classifier'].predict_proba(features)[0]
-    return jsonify(scores=[{'label': str(label), 'score': round(float(score), 4)} for label, score in zip(model.classes_, scores)])
+    return jsonify(**analyze_emotions(text, model), model_version=metrics['model_version'])
